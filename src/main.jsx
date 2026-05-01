@@ -4,7 +4,9 @@ import { animate, stagger, createTimeline } from "animejs";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
+  Check,
   Code2,
+  Copy,
   Database,
   Download,
   Github,
@@ -19,18 +21,23 @@ import {
   Server,
   Sparkles,
   Sun,
-  Trophy,
 } from "lucide-react";
 import portfolio from "./data/portfolio.json";
 import "./styles.css";
 
 const iconMap = {
   Frontend: Code2,
+  "Frontend Stack": Code2,
   Backend: Server,
+  "Backend Stack": Server,
   Databases: Database,
+  "Core Capabilities": Sparkles,
   "Version Control": Github,
   Containerization: Layers3,
   Server: Server,
+  Tools: Layers3,
+  Languages: Mail,
+  Interests: Sparkles,
   Other: Sparkles,
 };
 
@@ -332,7 +339,7 @@ function usePortfolioAnimations() {
 
 function App() {
   const rootRef = usePortfolioAnimations();
-  const { personal, summary, metrics, skills, experience, projects, education, certifications, languages, hobbies } = portfolio;
+  const { personal, contactItems, summary, metrics, skills, experience, projects, education, languages, hobbies } = portfolio;
   const [theme, setTheme] = useState(() => localStorage.getItem("portfolio-theme") || "dark");
   const featuredProject = projects[0];
   const otherProjects = projects.slice(1);
@@ -438,9 +445,15 @@ function App() {
                   <span>{job.period}</span>
                 </div>
                 <p className="role">{job.role}</p>
+                {job.description && <p className="job-description">{job.description}</p>}
                 <ul>
                   {job.highlights.slice(0, 4).map((point) => <li key={point}>{point}</li>)}
                 </ul>
+                {job.tags?.length > 0 && (
+                  <div className="chips compact">
+                    {job.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                  </div>
+                )}
               </div>
             </article>
           ))}
@@ -475,7 +488,6 @@ function App() {
       <Section eyebrow="Education & More" title="Foundation, certifications, languages, and interests.">
         <div className="info-grid">
           <InfoPanel icon={GraduationCap} title="Education" items={education.map((item) => `${item.degree} - ${item.institution} (${item.period}) ${item.score ? item.score : ""}`)} />
-          <InfoPanel icon={Trophy} title="Certifications" items={certifications} />
           <InfoPanel icon={Mail} title="Languages" items={languages} />
           <InfoPanel icon={Sparkles} title="Hobbies" items={hobbies} />
         </div>
@@ -491,8 +503,41 @@ function App() {
           <ArrowUpRight size={18} />
           Start Conversation
         </a>
+        <ContactCards items={contactItems} />
       </footer>
     </main>
+  );
+}
+
+function ContactCards({ items = [] }) {
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopy = async (item) => {
+    await navigator.clipboard.writeText(item.label);
+    setCopiedId(item.id);
+    window.setTimeout(() => setCopiedId(null), 1400);
+  };
+
+  return (
+    <div className="contact-cards reveal-item">
+      {items.map((item) => {
+        const Icon = item.type === "phone" ? Phone : item.type === "email" ? Mail : item.type === "linkedin" ? Linkedin : Github;
+        return (
+          <article className="contact-card magnetic-card" key={item.id}>
+            <a href={item.href} target={item.href.startsWith("http") ? "_blank" : undefined} rel={item.href.startsWith("http") ? "noreferrer" : undefined} aria-label={item.title}>
+              <Icon size={20} />
+              <span>{item.title}</span>
+              <strong>{item.label}</strong>
+            </a>
+            {item.copyToClipboardButton && (
+              <button type="button" onClick={() => handleCopy(item)} aria-label={`Copy ${item.title}`}>
+                {copiedId === item.id ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+            )}
+          </article>
+        );
+      })}
+    </div>
   );
 }
 

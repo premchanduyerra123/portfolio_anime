@@ -1120,6 +1120,12 @@ li {
   font-weight: 800;
 }
 
+.job-description {
+  margin-bottom: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
 ul {
   margin: 0;
   padding-left: 18px;
@@ -1197,11 +1203,12 @@ li {
 }
 
 .info-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 22px;
@@ -1211,6 +1218,73 @@ li {
 .footer p {
   margin-top: 14px;
   color: var(--muted);
+}
+
+.contact-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.contact-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: 0 18px 55px var(--shadow);
+}
+
+.contact-card a {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 10px;
+  min-width: 0;
+  align-items: center;
+}
+
+.contact-card svg {
+  color: var(--mint);
+}
+
+.contact-card span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.contact-card strong {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.95rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-card button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--glass);
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.contact-card button:hover {
+  color: var(--on-accent);
+  background: var(--mint);
+  transform: translateY(-2px);
 }
 
 .reveal-item {
@@ -1240,7 +1314,7 @@ li {
   }
 
   .info-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .featured-project {
@@ -1251,9 +1325,19 @@ li {
     min-height: 220px;
   }
 
+  .contact-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .social-bar {
     left: auto;
     right: 14px;
+  }
+}
+
+@media (max-width: 780px) {
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1328,5 +1412,9 @@ li {
 
   .theme-toggle {
     flex: 0 0 auto;
+  }
+
+  .contact-cards {
+    grid-template-columns: 1fr;
   }
 }

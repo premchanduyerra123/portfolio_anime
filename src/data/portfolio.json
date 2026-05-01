@@ -1,124 +1,169 @@
 {
   "personal": {
-    "name": "Yerra Prem Chandu",
+    "name": "Prem Chandu Yerra",
     "initials": "PC",
-    "title": "Full Stack Developer",
+    "title": "Java Full Stack Developer",
     "heroHeadline": "Java + React Full Stack Developer",
-    "availability": "Java + React Full Stack Engineer",
+    "availability": "About me",
     "experienceStartDate": "2021-08-04",
-    "location": "Boinpally, Telangana, India",
+    "location": "Telangana, India",
     "email": "premchandu.yerra@gmail.com",
     "phone": "+91 9502127621",
     "resumeFile": "/Prem_Java_4Years_Resume.pdf",
-    "avatarNote": "Full Stack Developer",
     "socials": {
-      "github": "https://github.com/premchanduyerra/portfolio_anime",
-      "linkedin": ""
+      "github": "https://github.com/premchanduyerra",
+      "linkedin": "https://www.linkedin.com/in/premchanduyerra/"
     }
   },
-  "summary": "Experienced Full Stack Developer with over {{yearsExperience}} years of expertise in web development. Proficient in React.js and Spring Boot, with a demonstrated history of enhancing system performance and user engagement through innovative solutions.",
+  "contactItems": [
+    {
+      "id": 1,
+      "title": "Phone",
+      "label": "+91 9502127621",
+      "href": "tel:+919502127621",
+      "copyToClipboardButton": true,
+      "type": "phone"
+    },
+    {
+      "id": 2,
+      "title": "E-mail",
+      "label": "premchandu.yerra@gmail.com",
+      "href": "mailto:premchandu.yerra@gmail.com",
+      "copyToClipboardButton": true,
+      "type": "email"
+    },
+    {
+      "id": 3,
+      "title": "LinkedIn",
+      "label": "linkedin.com/in/premchanduyerra",
+      "href": "https://www.linkedin.com/in/premchanduyerra/",
+      "copyToClipboardButton": false,
+      "type": "linkedin"
+    },
+    {
+      "id": 4,
+      "title": "GitHub",
+      "label": "github.com/premchanduyerra",
+      "href": "https://github.com/premchanduyerra",
+      "copyToClipboardButton": false,
+      "type": "github"
+    }
+  ],
+  "summary": "I am a Java Full Stack Developer with over {{yearsExperience}} years of experience building scalable web applications using React.js and Spring Boot. I design RESTful APIs, implement secure authentication with JWT/RBAC, optimize PostgreSQL, SQL Server, and MongoDB workloads, and modernize legacy systems into Spring-based architectures.",
   "metrics": [
-    { "value": "{{yearsExperience}}+", "label": "Years in full stack development" },
-    { "value": "3", "label": "Major organizations served" },
-    { "value": "Java", "label": "Primary backend ecosystem" },
-    { "value": "React", "label": "Primary frontend ecosystem" }
+    { "value": "{{yearsExperience}}+", "label": "Java full-stack delivery" },
+    { "value": "Spring Boot APIs", "label": "REST, JWT, RBAC, async processing" },
+    { "value": "SQL + MongoDB", "label": "PostgreSQL, SQL Server, query tuning" },
+    { "value": "React Systems", "label": "Reusable UI, Atomic Design, Storybook" }
   ],
   "skills": [
     {
-      "category": "Frontend",
-      "items": ["React.js", "React Query", "Redux", "JavaScript", "TypeScript", "jQuery", "Bootstrap", "HTML5", "CSS3", "Chakra UI", "Thymeleaf", "React Hook Form", "MUI"]
+      "category": "Backend Stack",
+      "items": ["Java", "Spring Boot", "Spring MVC", "PostgreSQL", "SQL Server", "JWT Security", "JPA / Hibernate", "Swagger / OpenAPI"]
     },
     {
-      "category": "Backend",
-      "items": ["Java 8", "Spring Boot", "Spring Data JPA", "Spring MVC", "Spring", "RESTful APIs", "Authentication", "JWT", "Hibernate", "Feign Clients", "Keycloak", "Microservices"]
+      "category": "Frontend Stack",
+      "items": ["React.js", "Redux", "JavaScript (ES6+)", "TypeScript", "HTML5", "CSS3", "Storybook"]
     },
     {
-      "category": "Databases",
-      "items": ["PostgreSQL", "MySQL", "MongoDB", "SQL Server", "Query Optimization"]
+      "category": "Core Capabilities",
+      "items": ["Full Stack Development", "REST API Development", "Database Optimization", "Authentication & Security", "Testing & Quality"]
     },
     {
-      "category": "Version Control",
-      "items": ["Git", "GitLab", "Subversion (SVN)"]
+      "category": "Tools",
+      "items": ["Docker", "Git", "GitLab", "SVN", "JUnit", "Mockito"]
     },
     {
-      "category": "Containerization",
-      "items": ["Docker"]
+      "category": "Languages",
+      "items": ["English - Professional", "Telugu - Native", "Hindi - Professional"]
     },
     {
-      "category": "Server",
-      "items": ["Apache Tomcat"]
-    },
-    {
-      "category": "Other",
-      "items": ["Agile Methodologies", "Problem Solving", "Communication", "Continuous Learning", "Maven", "JUnit", "Mockito"]
+      "category": "Interests",
+      "items": ["Backend Architecture", "Database Optimization", "DevOps & Docker", "Continuous Learning", "Sports & Meditation"]
     }
   ],
   "experience": [
     {
       "company": "Welspun Transformation Services Limited",
       "role": "Senior Engineer",
-      "period": "April 2025 - Present",
+      "period": "Apr 2025 - Present",
+      "location": "Telangana, India",
+      "description": "Designed and developed the WelHire recruitment platform using Spring Boot and React.js, implemented CV parsing and JD-CV matching, built secure APIs with JWT/RBAC, and optimized PostgreSQL/MongoDB queries with async processing.",
       "highlights": [
-        "Designed and developed a microservices-based recruitment platform, WelHire, using Spring Boot and React.js.",
-        "Implemented CV parsing, JD-CV matching, AI-driven scoring, and automated interview scheduling workflows.",
-        "Developed secure REST APIs with JWT authentication and role-based access control.",
-        "Optimized PostgreSQL and MongoDB queries to enhance candidate evaluation performance and reduce latency.",
-        "Collaborated on scalable frontend modules using React, TypeScript, and MUI to deliver dynamic recruitment dashboards."
-      ]
+        "Built WelHire recruitment automation platform.",
+        "Implemented JWT auth and role-based access control.",
+        "Optimized PostgreSQL and MongoDB queries.",
+        "Added async processing and scheduled pipelines.",
+        "Delivered React + TypeScript dashboards."
+      ],
+      "tags": ["Java", "Spring Boot", "Microservices", "React.js", "TypeScript", "PostgreSQL", "MongoDB", "JWT"]
     },
     {
       "company": "Zemoso Technologies",
       "role": "Software Engineer II",
-      "period": "Nov 2024 - April 2025",
+      "period": "Nov 2024 - Apr 2025",
+      "location": "Telangana, India",
+      "description": "Designed and developed scalable backend APIs using Spring Boot and MySQL while building reusable React components following Atomic Design principles. Integrated Storybook for component documentation and testing.",
       "highlights": [
-        "Developed reusable and scalable React components following Atomic Design principles.",
-        "Integrated components into Storybook for documentation, testing, and isolated behavior showcases.",
-        "Designed backend APIs using Java, Spring Boot, and MySQL.",
-        "Created database schemas and API architecture with Spring Data JPA integration.",
-        "Wrote unit and integration tests using JUnit and Mockito to improve application reliability."
-      ]
+        "Developed RESTful APIs using Spring Boot.",
+        "Implemented JWT-based authentication.",
+        "Built reusable UI components with React.js.",
+        "Integrated Storybook for UI documentation.",
+        "Wrote unit and integration tests using JUnit and Mockito."
+      ],
+      "tags": ["Java", "Spring Boot", "React.js", "JWT", "JUnit", "MySQL"]
     },
     {
       "company": "Centre for Good Governance",
       "role": "Software Developer",
       "period": "Aug 2021 - Nov 2024",
+      "location": "Telangana, India",
+      "description": "Developed and maintained government web portals using Java, React.js, and Spring Boot. Played a key role in migrating legacy Struts applications to Spring MVC, improving scalability and maintainability.",
       "highlights": [
-        "Designed and developed web portals using Java, React.js, and Spring Boot to simplify public access to government services.",
-        "Led migration from legacy systems to modern frameworks, improving scalability, maintainability, and load times.",
-        "Maintained Spring-based applications in distributed architecture with a focus on performance and reliability.",
-        "Migrated Struts context to Spring MVC to enhance application scalability and performance.",
-        "Implemented interactive interfaces with React.js, Redux, Bootstrap, Chakra UI, and Thymeleaf."
-      ]
+        "Migrated Struts-based applications to Spring MVC.",
+        "Developed REST APIs using Spring Boot.",
+        "Optimized PostgreSQL and SQL Server queries.",
+        "Integrated third-party APIs including Aadhaar, OTP, and BIE.",
+        "Supported CI/CD and deployment processes using Git."
+      ],
+      "tags": ["Java", "Spring MVC", "Spring Boot", "React.js", "PostgreSQL", "SQL Server", "Docker"]
     }
   ],
   "projects": [
     {
-      "name": "WelHire - AI-Powered Recruitment Automation Platform",
-      "label": "Recruitment Automation",
-      "technologies": ["Spring Boot", "Microservices", "PostgreSQL", "MongoDB", "React.js", "TypeScript", "MUI", "React Query", "JWT", "Keycloak"],
-      "description": "Designed and developed a scalable recruitment automation platform that streamlines job creation, CV sourcing, AI-driven candidate scoring, qualifier evaluation, and automated interview scheduling.",
-      "impact": "Improved recruitment efficiency through automation, reduced manual interview scheduling, enhanced candidate evaluation accuracy, and increased scalability with distributed microservices architecture."
+      "name": "WelHire - AI-Powered Recruitment Automation",
+      "label": "Enterprise System",
+      "technologies": ["Spring Boot", "Microservices", "React.js", "TypeScript", "PostgreSQL", "MongoDB", "JWT"],
+      "description": "Built a microservices-based recruitment platform using Spring Boot, React.js, and TypeScript. Implemented CV parsing, JD-CV matching, AI-driven scoring, and automated interview scheduling with secure JWT/RBAC APIs and optimized PostgreSQL + MongoDB workflows.",
+      "impact": "Improved recruitment automation, reduced manual scheduling effort, and increased candidate evaluation accuracy."
     },
     {
-      "name": "DOST",
+      "name": "DOST - Student Admission Portal",
       "label": "Government Portal",
-      "technologies": ["Apache Struts", "Java", "Spring", "Thymeleaf", "React.js", "RESTful APIs", "PostgreSQL", "Docker"],
-      "description": "Streamlined student application processing for colleges with Spring backend services and intuitive Thymeleaf and React.js frontend modules.",
-      "impact": "Enhanced system functionality, improved user verification processes, and reduced application processing time."
+      "technologies": ["Java", "Spring Boot", "React.js", "PostgreSQL", "JWT", "Government Portal"],
+      "description": "Developed a large-scale government admission portal using Java, Spring Boot, React.js, Thymeleaf, and PostgreSQL. Integrated Aadhaar verification, OTP authentication, and board exam verification APIs to streamline admissions.",
+      "impact": "Reduced manual verification effort and improved student admission processing."
+    },
+    {
+      "name": "EKALYAN - Scholarship Distribution System",
+      "label": "Scholarship Platform",
+      "technologies": ["Spring Boot", "React.js", "JWT", "SQL Server", "REST APIs"],
+      "description": "Built a secure scholarship management system using React.js, Spring Boot, Thymeleaf, REST APIs, and SQL Server. Implemented JWT authentication and optimized backend APIs for large beneficiary datasets.",
+      "impact": "Improved scholarship workflow reliability and supported timely disbursement."
     },
     {
       "name": "Diet Plan for Couch Vastav",
-      "label": "Enterprise Platform",
-      "technologies": ["React.js", "Java", "Spring Boot", "Redux", "PostgreSQL"],
-      "description": "Created a comprehensive diet plan application with React.js frontend, Spring Boot APIs, and optimized PostgreSQL schemas for large data volumes.",
-      "impact": "Enhanced client satisfaction and supported compliance with nutritional guidelines."
+      "label": "Application",
+      "technologies": ["React.js", "Spring Boot", "PostgreSQL", "Redux", "Full Stack"],
+      "description": "Developed a full-stack diet planning application using React.js for frontend and Spring Boot for backend. Designed optimized PostgreSQL schemas and implemented Redux for state management.",
+      "impact": "Improved data organization and user experience for diet planning workflows."
     },
     {
-      "name": "E-Kalyan",
-      "label": "Scholarship Platform",
-      "technologies": ["React.js", "Spring", "Thymeleaf", "RESTful APIs", "SQL Server", "JWT", "Git", "GitLab"],
-      "description": "Designed and developed a user-friendly scholarship distribution interface with React.js and Thymeleaf, backed by secure Spring services.",
-      "impact": "Improved system performance, increased user engagement, and supported timely scholarship disbursement."
+      "name": "Appsmith - Dynamic UI & API Platform",
+      "label": "Enterprise System",
+      "technologies": ["React.js", "Spring Boot", "Swagger", "Atomic Design", "APIs"],
+      "description": "Designed and implemented dynamic UI screens using React.js following Atomic Design principles. Integrated backend APIs using Spring Boot and documented APIs with Swagger.",
+      "impact": "Enabled scalable data-driven pages based on selected schemas and sources."
     }
   ],
   "education": [
@@ -141,9 +186,6 @@
       "score": "CGPA: 9.5"
     }
   ],
-  "certifications": [
-    "Udemy Certified: Complete A-Z Full Stack Development Course"
-  ],
-  "languages": ["English", "Hindi", "Telugu"],
-  "hobbies": ["Reading Books", "Playing Carrom", "Playing Volleyball", "Meditation", "Listening to Music", "Learning new technologies"]
+  "languages": ["English", "Telugu", "Hindi"],
+  "hobbies": ["Sports & Meditation", "Playing Volleyball", "Playing Carrom", "Continuous Learning"]
 }

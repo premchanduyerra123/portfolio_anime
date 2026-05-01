@@ -1,0 +1,139 @@
+{
+  "personal": {
+    "name": "Yerra Prem Chandu",
+    "initials": "PC",
+    "title": "Full Stack Developer",
+    "availability": "Java + React Full Stack Engineer",
+    "yearsExperience": "4.6+",
+    "location": "Boinpally, Telangana, India",
+    "email": "premchandu.yerra@gmail.com",
+    "phone": "+91 9502127621",
+    "resumeFile": "/Prem_Java_4Years_Resume.pdf"
+  },
+  "summary": "Experienced Full Stack Developer with over 4.6 years of expertise in web development. Proficient in React.js and Spring Boot, with a demonstrated history of enhancing system performance and user engagement through innovative solutions.",
+  "metrics": [
+    { "value": "4.6+", "label": "Years in full stack development" },
+    { "value": "3", "label": "Major organizations served" },
+    { "value": "Java", "label": "Primary backend ecosystem" },
+    { "value": "React", "label": "Primary frontend ecosystem" }
+  ],
+  "skills": [
+    {
+      "category": "Frontend",
+      "items": ["React.js", "React Query", "Redux", "JavaScript", "TypeScript", "jQuery", "Bootstrap", "HTML5", "CSS3", "Chakra UI", "Thymeleaf", "React Hook Form", "MUI"]
+    },
+    {
+      "category": "Backend",
+      "items": ["Java 8", "Spring Boot", "Spring Data JPA", "Spring MVC", "Spring", "RESTful APIs", "Authentication", "JWT", "Hibernate", "Feign Clients", "Keycloak", "Microservices"]
+    },
+    {
+      "category": "Databases",
+      "items": ["PostgreSQL", "MySQL", "MongoDB", "SQL Server", "Query Optimization"]
+    },
+    {
+      "category": "Version Control",
+      "items": ["Git", "GitLab", "Subversion (SVN)"]
+    },
+    {
+      "category": "Containerization",
+      "items": ["Docker"]
+    },
+    {
+      "category": "Server",
+      "items": ["Apache Tomcat"]
+    },
+    {
+      "category": "Other",
+      "items": ["Agile Methodologies", "Problem Solving", "Communication", "Continuous Learning", "Maven", "JUnit", "Mockito"]
+    }
+  ],
+  "experience": [
+    {
+      "company": "Welspun Transformation Services Limited",
+      "role": "Senior Engineer",
+      "period": "April 2025 - Present",
+      "highlights": [
+        "Designed and developed a microservices-based recruitment platform, WelHire, using Spring Boot and React.js.",
+        "Implemented CV parsing, JD-CV matching, AI-driven scoring, and automated interview scheduling workflows.",
+        "Developed secure REST APIs with JWT authentication and role-based access control.",
+        "Optimized PostgreSQL and MongoDB queries to enhance candidate evaluation performance and reduce latency.",
+        "Collaborated on scalable frontend modules using React, TypeScript, and MUI to deliver dynamic recruitment dashboards."
+      ]
+    },
+    {
+      "company": "Zemoso Technologies",
+      "role": "Software Engineer II",
+      "period": "Nov 2024 - April 2025",
+      "highlights": [
+        "Developed reusable and scalable React components following Atomic Design principles.",
+        "Integrated components into Storybook for documentation, testing, and isolated behavior showcases.",
+        "Designed backend APIs using Java, Spring Boot, and MySQL.",
+        "Created database schemas and API architecture with Spring Data JPA integration.",
+        "Wrote unit and integration tests using JUnit and Mockito to improve application reliability."
+      ]
+    },
+    {
+      "company": "Centre for Good Governance",
+      "role": "Software Developer",
+      "period": "Aug 2021 - Nov 2024",
+      "highlights": [
+        "Designed and developed web portals using Java, React.js, and Spring Boot to simplify public access to government services.",
+        "Led migration from legacy systems to modern frameworks, improving scalability, maintainability, and load times.",
+        "Maintained Spring-based applications in distributed architecture with a focus on performance and reliability.",
+        "Migrated Struts context to Spring MVC to enhance application scalability and performance.",
+        "Implemented interactive interfaces with React.js, Redux, Bootstrap, Chakra UI, and Thymeleaf."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "WelHire - AI-Powered Recruitment Automation Platform",
+      "technologies": ["Spring Boot", "Microservices", "PostgreSQL", "MongoDB", "React.js", "TypeScript", "MUI", "React Query", "JWT", "Keycloak"],
+      "description": "Designed and developed a scalable recruitment automation platform that streamlines job creation, CV sourcing, AI-driven candidate scoring, qualifier evaluation, and automated interview scheduling.",
+      "impact": "Improved recruitment efficiency through automation, reduced manual interview scheduling, enhanced candidate evaluation accuracy, and increased scalability with distributed microservices architecture."
+    },
+    {
+      "name": "DOST",
+      "technologies": ["Apache Struts", "Java", "Spring", "Thymeleaf", "React.js", "RESTful APIs", "PostgreSQL", "Docker"],
+      "description": "Streamlined student application processing for colleges with Spring backend services and intuitive Thymeleaf and React.js frontend modules.",
+      "impact": "Enhanced system functionality, improved user verification processes, and reduced application processing time."
+    },
+    {
+      "name": "Diet Plan for Couch Vastav",
+      "technologies": ["React.js", "Java", "Spring Boot", "Redux", "PostgreSQL"],
+      "description": "Created a comprehensive diet plan application with React.js frontend, Spring Boot APIs, and optimized PostgreSQL schemas for large data volumes.",
+      "impact": "Enhanced client satisfaction and supported compliance with nutritional guidelines."
+    },
+    {
+      "name": "E-Kalyan",
+      "technologies": ["React.js", "Spring", "Thymeleaf", "RESTful APIs", "SQL Server", "JWT", "Git", "GitLab"],
+      "description": "Designed and developed a user-friendly scholarship distribution interface with React.js and Thymeleaf, backed by secure Spring services.",
+      "impact": "Improved system performance, increased user engagement, and supported timely scholarship disbursement."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech in Computer Science & Engineering",
+      "institution": "JNTUH College of Engineering, Jagtial",
+      "period": "2017 - 2021",
+      "score": "CGPA: 7.41"
+    },
+    {
+      "degree": "Intermediate",
+      "institution": "Alphores Junior College, Kothapally",
+      "period": "2016 - 2017",
+      "score": "Percentage: 97.5%"
+    },
+    {
+      "degree": "Class X",
+      "institution": "Manair High School, Karimnagar",
+      "period": "2015",
+      "score": "CGPA: 9.5"
+    }
+  ],
+  "certifications": [
+    "Udemy Certified: Complete A-Z Full Stack Development Course"
+  ],
+  "languages": ["English", "Hindi", "Telugu"],
+  "hobbies": ["Reading Books", "Playing Carrom", "Playing Volleyball", "Meditation", "Listening to Music", "Learning new technologies"]
+}

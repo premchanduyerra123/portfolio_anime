@@ -3,16 +3,22 @@
     "name": "Yerra Prem Chandu",
     "initials": "PC",
     "title": "Full Stack Developer",
+    "heroHeadline": "Java + React Full Stack Developer",
     "availability": "Java + React Full Stack Engineer",
-    "yearsExperience": "4.6+",
+    "experienceStartDate": "2021-08-04",
     "location": "Boinpally, Telangana, India",
     "email": "premchandu.yerra@gmail.com",
     "phone": "+91 9502127621",
-    "resumeFile": "/Prem_Java_4Years_Resume.pdf"
+    "resumeFile": "/Prem_Java_4Years_Resume.pdf",
+    "avatarNote": "Full Stack Developer",
+    "socials": {
+      "github": "https://github.com/premchanduyerra/portfolio_anime",
+      "linkedin": ""
+    }
   },
-  "summary": "Experienced Full Stack Developer with over 4.6 years of expertise in web development. Proficient in React.js and Spring Boot, with a demonstrated history of enhancing system performance and user engagement through innovative solutions.",
+  "summary": "Experienced Full Stack Developer with over {{yearsExperience}} years of expertise in web development. Proficient in React.js and Spring Boot, with a demonstrated history of enhancing system performance and user engagement through innovative solutions.",
   "metrics": [
-    { "value": "4.6+", "label": "Years in full stack development" },
+    { "value": "{{yearsExperience}}+", "label": "Years in full stack development" },
     { "value": "3", "label": "Major organizations served" },
     { "value": "Java", "label": "Primary backend ecosystem" },
     { "value": "React", "label": "Primary frontend ecosystem" }
@@ -88,24 +94,28 @@
   "projects": [
     {
       "name": "WelHire - AI-Powered Recruitment Automation Platform",
+      "label": "Recruitment Automation",
       "technologies": ["Spring Boot", "Microservices", "PostgreSQL", "MongoDB", "React.js", "TypeScript", "MUI", "React Query", "JWT", "Keycloak"],
       "description": "Designed and developed a scalable recruitment automation platform that streamlines job creation, CV sourcing, AI-driven candidate scoring, qualifier evaluation, and automated interview scheduling.",
       "impact": "Improved recruitment efficiency through automation, reduced manual interview scheduling, enhanced candidate evaluation accuracy, and increased scalability with distributed microservices architecture."
     },
     {
       "name": "DOST",
+      "label": "Government Portal",
       "technologies": ["Apache Struts", "Java", "Spring", "Thymeleaf", "React.js", "RESTful APIs", "PostgreSQL", "Docker"],
       "description": "Streamlined student application processing for colleges with Spring backend services and intuitive Thymeleaf and React.js frontend modules.",
       "impact": "Enhanced system functionality, improved user verification processes, and reduced application processing time."
     },
     {
       "name": "Diet Plan for Couch Vastav",
+      "label": "Enterprise Platform",
       "technologies": ["React.js", "Java", "Spring Boot", "Redux", "PostgreSQL"],
       "description": "Created a comprehensive diet plan application with React.js frontend, Spring Boot APIs, and optimized PostgreSQL schemas for large data volumes.",
       "impact": "Enhanced client satisfaction and supported compliance with nutritional guidelines."
     },
     {
       "name": "E-Kalyan",
+      "label": "Scholarship Platform",
       "technologies": ["React.js", "Spring", "Thymeleaf", "RESTful APIs", "SQL Server", "JWT", "Git", "GitLab"],
       "description": "Designed and developed a user-friendly scholarship distribution interface with React.js and Thymeleaf, backed by secure Spring services.",
       "impact": "Improved system performance, increased user engagement, and supported timely scholarship disbursement."

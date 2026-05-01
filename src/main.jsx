@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { animate, stagger, createTimeline } from "animejs";
 import {
@@ -9,13 +9,16 @@ import {
   Download,
   Github,
   GraduationCap,
+  Linkedin,
   Layers3,
   Mail,
   MapPin,
+  Moon,
   Phone,
   Rocket,
   Server,
   Sparkles,
+  Sun,
   Trophy,
 } from "lucide-react";
 import portfolio from "./data/portfolio.json";
@@ -30,6 +33,18 @@ const iconMap = {
   Server: Server,
   Other: Sparkles,
 };
+
+function calculateYearsExperience(startDate) {
+  const start = new Date(`${startDate}T00:00:00`);
+  const now = new Date();
+  const years = (now.getTime() - start.getTime()) / (365.2425 * 24 * 60 * 60 * 1000);
+  return Math.max(0, years).toFixed(1);
+}
+
+function hydrateDynamicText(value, replacements) {
+  if (typeof value !== "string") return value;
+  return value.replace(/\{\{yearsExperience\}\}/g, replacements.yearsExperience);
+}
 
 function usePortfolioAnimations() {
   const rootRef = useRef(null);
@@ -155,6 +170,27 @@ function usePortfolioAnimations() {
       loop: true,
       delay: stagger(900),
       ease: "linear",
+    });
+
+    animate(".planet-orbit", {
+      rotate: "1turn",
+      duration: (_, index) => 9000 + index * 3600,
+      loop: true,
+      delay: stagger(300),
+      ease: "linear",
+    });
+
+    animate(".planet", {
+      scale: [1, 1.18, 1],
+      boxShadow: [
+        "0 0 12px rgba(94, 234, 212, 0.2)",
+        "0 0 26px rgba(94, 234, 212, 0.55)",
+        "0 0 12px rgba(94, 234, 212, 0.2)",
+      ],
+      duration: 2400,
+      loop: true,
+      delay: stagger(260),
+      ease: "inOutSine",
     });
 
     const onScroll = () => {
@@ -297,54 +333,74 @@ function usePortfolioAnimations() {
 function App() {
   const rootRef = usePortfolioAnimations();
   const { personal, summary, metrics, skills, experience, projects, education, certifications, languages, hobbies } = portfolio;
+  const [theme, setTheme] = useState(() => localStorage.getItem("portfolio-theme") || "dark");
+  const featuredProject = projects[0];
+  const otherProjects = projects.slice(1);
+  const yearsExperience = calculateYearsExperience(personal.experienceStartDate);
+  const dynamicPersonal = { ...personal, yearsExperience: `${yearsExperience}+` };
+  const dynamicSummary = hydrateDynamicText(summary, { yearsExperience });
+  const dynamicMetrics = metrics.map((metric) => ({
+    ...metric,
+    value: hydrateDynamicText(metric.value, { yearsExperience }),
+  }));
+
+  useEffect(() => {
+    localStorage.setItem("portfolio-theme", theme);
+  }, [theme]);
 
   return (
-    <main ref={rootRef}>
+    <main ref={rootRef} data-theme={theme}>
       <div className="scroll-progress" aria-hidden="true" />
       <AmbientMotion />
+      <SocialBar personal={dynamicPersonal} />
       <nav className="nav">
         <a className="brand" href="#top" aria-label="Home">
-          <span>{personal.initials}</span>
-          {personal.name}
+          <span>{dynamicPersonal.initials}</span>
+          {dynamicPersonal.name}
         </a>
         <div className="nav-links">
           <a href="#work">Work</a>
           <a href="#projects">Projects</a>
           <a href="#skills">Skills</a>
           <a href="#contact">Contact</a>
+          <button className="theme-toggle" type="button" onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")} aria-label="Toggle color theme">
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
         </div>
       </nav>
 
       <section id="top" className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">{personal.availability}</span>
-          <h1>{personal.name}</h1>
-          <p className="title">{personal.title}</p>
-          <p className="summary">{summary}</p>
+          <h1>{dynamicPersonal.heroHeadline}</h1>
+          <p className="summary">{dynamicSummary}</p>
           <div className="hero-actions">
-            <a className="primary-btn" href={`mailto:${personal.email}`}>
-              <Mail size={18} />
-              Hire Me
+            <a className="primary-btn" href="#projects">
+              <Rocket size={18} />
+              View Projects
             </a>
-            <a className="ghost-btn" href={personal.resumeFile} target="_blank" rel="noreferrer">
+            <a className="ghost-btn strong" href={`mailto:${dynamicPersonal.email}`}>
+              <Mail size={18} />
+              Contact Me
+            </a>
+            <a className="ghost-btn" href={dynamicPersonal.resumeFile} target="_blank" rel="noreferrer">
               <Download size={18} />
               Resume
             </a>
           </div>
           <div className="contact-strip">
-            <span><MapPin size={16} />{personal.location}</span>
-            <span><Phone size={16} />{personal.phone}</span>
-            <span><Mail size={16} />{personal.email}</span>
+            <span><MapPin size={16} />{dynamicPersonal.location}</span>
+            <span><Phone size={16} />{dynamicPersonal.phone}</span>
+            <span><Mail size={16} />{dynamicPersonal.email}</span>
           </div>
         </div>
 
         <div className="hero-visual" aria-hidden="true">
-          <LaptopScene skills={skills.slice(0, 4)} personal={personal} />
+          <LaptopScene skills={skills.slice(0, 4)} personal={dynamicPersonal} />
         </div>
       </section>
 
       <section className="metrics" aria-label="Career highlights">
-        {metrics.map((metric) => (
+        {dynamicMetrics.map((metric) => (
           <div className="metric" key={metric.label}>
             <strong>{metric.value}</strong>
             <span>{metric.label}</span>
@@ -383,7 +439,7 @@ function App() {
                 </div>
                 <p className="role">{job.role}</p>
                 <ul>
-                  {job.highlights.map((point) => <li key={point}>{point}</li>)}
+                  {job.highlights.slice(0, 4).map((point) => <li key={point}>{point}</li>)}
                 </ul>
               </div>
             </article>
@@ -391,11 +447,20 @@ function App() {
         </div>
       </Section>
 
+      {featuredProject && (
+        <Section id="featured" eyebrow="Featured Project" title="WelHire leads the portfolio because it shows current enterprise impact.">
+          <FeaturedProject project={featuredProject} />
+        </Section>
+      )}
+
       <Section id="projects" eyebrow="Featured Projects" title="Business platforms shipped with Java, React, and Spring.">
         <div className="project-grid">
-          {projects.map((project) => (
+          {otherProjects.map((project) => (
             <article className="project-card reveal-item magnetic-card" key={project.name}>
-              <div className="project-icon"><Rocket size={22} /></div>
+              <div className="project-card-top">
+                <div className="project-icon"><Rocket size={22} /></div>
+                <span className="project-label">{project.label}</span>
+              </div>
               <h3>{project.name}</h3>
               <p>{project.description}</p>
               <div className="chips compact">
@@ -420,14 +485,56 @@ function App() {
         <div className="reveal-item">
           <span className="eyebrow">Contact</span>
           <h2>Let's build polished web platforms.</h2>
-          <p>{personal.email} - {personal.phone}</p>
+          <p>{dynamicPersonal.email} - {dynamicPersonal.phone}</p>
         </div>
-        <a className="primary-btn reveal-item" href={`mailto:${personal.email}`}>
+        <a className="primary-btn reveal-item" href={`mailto:${dynamicPersonal.email}`}>
           <ArrowUpRight size={18} />
           Start Conversation
         </a>
       </footer>
     </main>
+  );
+}
+
+function SocialBar({ personal }) {
+  const links = [
+    { label: "Email", href: `mailto:${personal.email}`, icon: Mail },
+    { label: "Phone", href: `tel:${personal.phone.replace(/\s/g, "")}`, icon: Phone },
+    personal.socials?.github ? { label: "GitHub", href: personal.socials.github, icon: Github } : null,
+    personal.socials?.linkedin ? { label: "LinkedIn", href: personal.socials.linkedin, icon: Linkedin } : null,
+  ].filter(Boolean);
+
+  return (
+    <aside className="social-bar" aria-label="Quick contact links">
+      {links.map(({ label, href, icon: Icon }) => (
+        <a href={href} key={label} aria-label={label} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>
+          <Icon size={18} />
+        </a>
+      ))}
+    </aside>
+  );
+}
+
+function FeaturedProject({ project }) {
+  return (
+    <article className="featured-project reveal-item magnetic-card">
+      <div className="featured-copy">
+        <span className="project-label">{project.label}</span>
+        <h3>{project.name}</h3>
+        <p>{project.description}</p>
+        <p className="impact">{project.impact}</p>
+      </div>
+      <div className="featured-panel" aria-hidden="true">
+        <div className="featured-orbit" />
+        <Rocket size={42} />
+        <span>AI scoring</span>
+        <span>CV parsing</span>
+        <span>Scheduling</span>
+      </div>
+      <div className="chips compact">
+        {project.technologies.map((tech) => <span key={tech}>{tech}</span>)}
+      </div>
+    </article>
   );
 }
 
@@ -513,7 +620,10 @@ function LaptopScene({ skills, personal }) {
         </div>
       ))}
       <span className="scene-ring ring-one" />
-      <span className="scene-ring ring-two" />
+      <div className="solar-system">
+        <span className="planet-orbit orbit-path-one"><i className="planet planet-one" /></span>
+        <span className="planet-orbit orbit-path-two"><i className="planet planet-two" /></span>
+      </div>
     </div>
   );
 }

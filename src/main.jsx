@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { animate, stagger, createTimeline } from "animejs";
 import {
@@ -749,336 +749,243 @@ function AmbientMotion() {
   );
 }
 
-function Loader({ personal, fading }) {
-  const loaderRef = useRef(null);
+// ─── Speedometer Loader ───────────────────────────────────────────────────
 
-  // Portfolio palette
+const CAPTIONS = [
+  "Compiling genius...",
+  "Bribing the servers 💸",
+  "Turning coffee → code ☕",
+  "git push --force 😈",
+  "Almost hired already 🚀",
+  "Stack Overflow is open 🤫",
+  "Deleting node_modules...",
+  "It works on my machine ��",
+  "sudo make me a portfolio",
+  "404: Sleep not found 😴",
+];
+
+function Loader({ personal, fading }) {
+  const needleRef  = useRef(null);
+  const readoutRef = useRef(null);
+  const glowRef    = useRef(null);
+  const caption    = useRef(CAPTIONS[Math.floor(Math.random() * CAPTIONS.length)]).current;
+
+  const SIZE  = 380;
+  const CX    = SIZE / 2;
+  const CY    = SIZE / 2 + 20;
+  const R     = 148;
+  const START = 225;
+  const SWEEP = 270;
+
   const MINT  = "#5eead4";
   const CORAL = "#fb7185";
   const GOLD  = "#facc15";
-  const BLUE  = "#60a5fa";
 
-  const SIZE    = 420;
-  const CX      = SIZE / 2;
-  const CY      = SIZE / 2;
-  const R_OUTER = 188;
-  const R_TICK  = 174;
-  const R_INNER = 156;
-
-  // Arc segments using portfolio colors
-  const arcSegments = [
-    { color: MINT,  start: 195, end: 268 },
-    { color: GOLD,  start: 270, end: 343 },
-    { color: CORAL, start: 345, end: 58  },
-    { color: BLUE,  start: 60,  end: 118 },
-    { color: MINT,  start: 120, end: 163 },
-  ];
-
-  function polarToXY(cx, cy, r, deg) {
+  function polar(cx, cy, r, deg) {
     const rad = ((deg - 90) * Math.PI) / 180;
     return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
   }
 
-  function arcPath(cx, cy, r, startDeg, endDeg) {
-    let s = startDeg, e = endDeg;
-    if (e < s) e += 360;
-    const large = e - s > 180 ? 1 : 0;
-    const p1 = polarToXY(cx, cy, r, s);
-    const p2 = polarToXY(cx, cy, r, e);
+  function arcD(cx, cy, r, startDeg, sweepDeg) {
+    const p1 = polar(cx, cy, r, startDeg);
+    const p2 = polar(cx, cy, r, startDeg + sweepDeg);
+    const large = sweepDeg > 180 ? 1 : 0;
     return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 1 ${p2.x} ${p2.y}`;
   }
 
-  function arcLength(r, startDeg, endDeg) {
-    let s = startDeg, e = endDeg;
-    if (e < s) e += 360;
-    return ((e - s) / 360) * 2 * Math.PI * r;
-  }
-
-  // Tick marks
-  const ticks = Array.from({ length: 120 }, (_, i) => {
-    const deg = (i / 120) * 360;
-    const isMajor = i % 10 === 0;
-    const r1 = R_OUTER - 2;
-    const r2 = isMajor ? R_TICK - 6 : R_TICK;
-    const p1 = polarToXY(CX, CY, r1, deg);
-    const p2 = polarToXY(CX, CY, r2, deg);
-    return { p1, p2, isMajor };
-  });
-
-  // Diamond scan lines
-  const DIAMOND_W = 128;
-  const DIAMOND_H = 158;
-  const diamondLines = Array.from({ length: 40 }, (_, i) => {
-    const t = i / 39;
-    const y = CY - DIAMOND_H / 2 + t * DIAMOND_H;
-    const halfW = (DIAMOND_W / 2) * (1 - Math.abs(t * 2 - 1));
-    return { x1: CX - halfW, x2: CX + halfW, y };
-  });
-
-  // Easing curve dots — inOutExpo shape
-  const easingDots = Array.from({ length: 24 }, (_, i) => {
-    const t = i / 23;
-    const ease = t < 0.5
-      ? Math.pow(2, 20 * t - 10) / 2
-      : (2 - Math.pow(2, -20 * t + 10)) / 2;
-    return {
-      x: CX - 88 + t * 196,
-      y: CY + 88 - ease * 196,
-    };
-  });
-
-  // Concentric trail arcs (bottom-right)
-  const trailArcs = [
-    { r: 98,  start: 28, end: 102 },
-    { r: 113, start: 22, end: 96  },
-    { r: 128, start: 16, end: 90  },
-    { r: 143, start: 10, end: 84  },
+  const zones = [
+    { color: MINT,  sweep: SWEEP * 0.40 },
+    { color: GOLD,  sweep: SWEEP * 0.35 },
+    { color: CORAL, sweep: SWEEP * 0.25 },
   ];
 
-  // ── anime.js animations ──────────────────────────────────────────────────
-  useEffect(() => {
-    const el = loaderRef.current;
-    if (!el) return;
+  const TICK_COUNT = 41;
+  const ticks = Array.from({ length: TICK_COUNT }, (_, i) => {
+    const t   = i / (TICK_COUNT - 1);
+    const deg = START + t * SWEEP;
+    const isMaj = i % 4 === 0;
+    return { p1: polar(CX, CY, R + 8, deg), p2: polar(CX, CY, isMaj ? R + 22 : R + 15, deg), isMaj };
+  });
 
-    // 1. Outer ring arcs draw in with accelerate (inExpo) — feels like engine revving
-    animate(el.querySelectorAll(".hud-ring-progress"), {
-      strokeDashoffset: (node) => {
-        const total = parseFloat(node.getAttribute("data-total") || 0);
+  const labels = [0, 25, 50, 75, 100].map((val, i) => {
+    const pos = polar(CX, CY, R + 36, START + (i / 4) * SWEEP);
+    return { val, ...pos };
+  });
+
+  const NEEDLE_LEN  = R - 18;
+  const NEEDLE_BACK = 22;
+
+  function needlePath(deg) {
+    const tip  = polar(CX, CY, NEEDLE_LEN, deg);
+    const back = polar(CX, CY, -NEEDLE_BACK, deg);
+    const lw   = polar(CX, CY, 10, deg + 90);
+    const rw   = polar(CX, CY, 10, deg - 90);
+    return `M ${lw.x} ${lw.y} L ${tip.x} ${tip.y} L ${rw.x} ${rw.y} L ${back.x} ${back.y} Z`;
+  }
+
+  useEffect(() => {
+    const needle  = needleRef.current;
+    const readout = readoutRef.current;
+    const glow    = glowRef.current;
+    if (!needle || !readout || !glow) return;
+
+    // anime.js v4: animate a DOM element's custom property, read it back each frame
+    // We use a hidden div as the "proxy" target via CSS variable trick,
+    // but the most reliable v4 approach is a timeline with onUpdate via the
+    // animation's currentTime. Instead, drive with rAF + a single timeline.
+
+    let rafId;
+    let startTime = null;
+    const DURATION = 2600;
+
+    // inOutExpo easing function
+    function inOutExpo(t) {
+      if (t === 0) return 0;
+      if (t === 1) return 1;
+      return t < 0.5
+        ? Math.pow(2, 20 * t - 10) / 2
+        : (2 - Math.pow(2, -20 * t + 10)) / 2;
+    }
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / DURATION, 1);
+      const eased = inOutExpo(t);
+      const speed = eased * 100;
+      const deg = START + eased * SWEEP;
+
+      needle.setAttribute("d", needlePath(deg));
+      readout.textContent = Math.round(speed);
+
+      const glowColor = speed < 40 ? MINT : speed < 75 ? GOLD : CORAL;
+      glow.style.filter = `drop-shadow(0 0 14px ${glowColor}) drop-shadow(0 0 4px ${glowColor})`;
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+
+    rafId = requestAnimationFrame(tick);
+
+    animate(".speedo-tick", {
+      opacity: [0, 1],
+      scaleY: [0, 1],
+      duration: 400,
+      delay: stagger(18, { easing: "inExpo" }),
+      ease: "outExpo",
+    });
+
+    animate(".speedo-zone", {
+      strokeDashoffset: (el) => {
+        const total = parseFloat(el.getAttribute("data-total") || 0);
         return [total, 0];
       },
-      duration: 2200,
-      delay: stagger(120, { easing: "inExpo" }), // accelerating stagger
+      duration: 2400,
+      delay: stagger(80),
       ease: "inOutExpo",
     });
 
-    // 2. Tick marks flash in with accelerating stagger
-    animate(el.querySelectorAll(".hud-tick"), {
+    animate(".speedo-label", {
       opacity: [0, 1],
-      scaleY: [0, 1],
-      duration: 600,
-      delay: stagger(8, { easing: "inExpo" }),
-      ease: "outExpo",
-    });
-
-    // 3. Diamond lines sweep in from center — accelerate outward
-    animate(el.querySelectorAll(".hud-diamond-line"), {
-      scaleX: [0, 1],
-      opacity: [0, 0.9],
-      duration: 900,
-      delay: stagger(28, { from: "center", easing: "inExpo" }),
-      ease: "outExpo",
-    });
-
-    // 4. Easing curve dots pop in with accelerating stagger
-    animate(el.querySelectorAll(".hud-dot"), {
-      opacity: [0, 1],
-      scale: [0, 1],
       duration: 500,
-      delay: stagger(55, { easing: "inExpo" }),
-      ease: "outBack(2.2)",
-    });
-
-    // 5. Trail arcs draw in
-    animate(el.querySelectorAll(".hud-arc"), {
-      strokeDashoffset: (node) => {
-        const total = parseFloat(node.getAttribute("data-total") || 0);
-        return [total, 0];
-      },
-      opacity: [0, 0.65],
-      duration: 800,
-      delay: stagger(100),
+      delay: stagger(60),
       ease: "outExpo",
     });
 
-    // 6. Center initials fade up
-    createTimeline({ defaults: { ease: "outExpo" } })
-      .add(el.querySelectorAll(".hud-initials"), {
-        opacity: [0, 1],
-        scale: [0.6, 1],
-        duration: 700,
-      }, 300);
-
-    // 7. Pulse glow on the ring — breathes with inOutSine
-    animate(el.querySelectorAll(".hud-ring-progress"), {
-      opacity: [1, 0.6, 1],
-      duration: 1200,
-      delay: stagger(80),
-      loop: true,
-      ease: "inOutSine",
+    animate(".speedo-caption", {
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 600,
+      ease: "outExpo",
     });
+
+    animate(".speedo-initials", {
+      opacity: [0, 1],
+      scale: [0.5, 1],
+      duration: 700,
+      ease: "outBack(1.8)",
+    });
+
+    return () => cancelAnimationFrame(rafId);
   }, []);
+
+  let zoneStart = START;
+  const zonePaths = zones.map((z) => {
+    const len = (z.sweep / 360) * 2 * Math.PI * R;
+    const d   = arcD(CX, CY, R, zoneStart, z.sweep);
+    zoneStart += z.sweep;
+    return { ...z, d, len };
+  });
 
   return (
     <div
       className="loader-wrapper"
-      ref={loaderRef}
       aria-hidden="true"
       style={{ opacity: fading ? 0 : 1, transition: "opacity 0.5s ease" }}
     >
-      <div className="loader-hud">
-        <svg
-          className="hud-svg"
-          width={SIZE}
-          height={SIZE}
-          viewBox={`0 0 ${SIZE} ${SIZE}`}
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Base circle */}
-          <circle cx={CX} cy={CY} r={R_OUTER} fill="#0a0f18" />
-          <circle cx={CX} cy={CY} r={R_OUTER} fill="url(#hudGrad)" />
+      <div className="speedo-container">
+        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} fill="none">
+          <circle cx={CX} cy={CY} r={R + 34} fill="#0d1220" stroke="rgba(94,234,212,0.12)" strokeWidth={1.5} />
+          <circle cx={CX} cy={CY} r={R + 28} fill="none"    stroke="rgba(94,234,212,0.06)" strokeWidth={1}   />
+          <path d={arcD(CX, CY, R, START, SWEEP)} stroke="rgba(255,255,255,0.07)" strokeWidth={14} strokeLinecap="round" />
 
-          {/* Tick marks */}
-          {ticks.map((t, i) => (
-            <line
-              key={i}
-              className="hud-tick"
-              x1={t.p1.x} y1={t.p1.y}
-              x2={t.p2.x} y2={t.p2.y}
-              stroke={t.isMajor ? `${MINT}66` : `${MINT}28`}
-              strokeWidth={t.isMajor ? 1.5 : 0.7}
-              opacity={0}
-              style={{ transformOrigin: `${t.p1.x}px ${t.p1.y}px` }}
-            />
+          {zonePaths.map((z, i) => (
+            <path key={i} className="speedo-zone" d={z.d} stroke={z.color}
+              strokeWidth={14} strokeLinecap="butt"
+              strokeDasharray={z.len} strokeDashoffset={z.len} data-total={z.len}
+              style={{ filter: `drop-shadow(0 0 6px ${z.color}88)` }} />
           ))}
 
-          {/* Ring base track */}
-          <circle
-            cx={CX} cy={CY} r={R_OUTER - 6}
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth={10}
-            fill="none"
-          />
-
-          {/* Colored arc segments */}
-          {arcSegments.map((seg, i) => {
-            const d   = arcPath(CX, CY, R_OUTER - 6, seg.start, seg.end);
-            const len = arcLength(R_OUTER - 6, seg.start, seg.end);
-            return (
-              <path
-                key={i}
-                className="hud-ring-progress"
-                d={d}
-                stroke={seg.color}
-                strokeWidth={10}
-                strokeLinecap="round"
-                strokeDasharray={len}
-                strokeDashoffset={len}
-                data-total={len}
-                style={{ filter: `drop-shadow(0 0 8px ${seg.color}aa)` }}
-              />
-            );
-          })}
-
-          {/* Inner circle */}
-          <circle cx={CX} cy={CY} r={R_INNER} fill="#0a0f18" />
-          <circle cx={CX} cy={CY} r={R_INNER} fill="url(#innerGrad)" />
-
-          {/* Diamond scan lines */}
-          {diamondLines.map((l, i) => (
-            <line
-              key={i}
-              className="hud-diamond-line"
-              x1={l.x1} y1={l.y} x2={l.x2} y2={l.y}
-              stroke={CORAL}
-              strokeWidth={1.1}
-              opacity={0}
-              style={{ transformOrigin: `${CX}px ${l.y}px` }}
-            />
+          {ticks.map((tk, i) => (
+            <line key={i} className="speedo-tick"
+              x1={tk.p1.x} y1={tk.p1.y} x2={tk.p2.x} y2={tk.p2.y}
+              stroke={tk.isMaj ? `${MINT}99` : `${MINT}44`}
+              strokeWidth={tk.isMaj ? 2 : 1} opacity={0}
+              style={{ transformOrigin: `${tk.p1.x}px ${tk.p1.y}px` }} />
           ))}
 
-          {/* Diamond outline */}
-          <polygon
-            points={`${CX},${CY - DIAMOND_H / 2} ${CX + DIAMOND_W / 2},${CY} ${CX},${CY + DIAMOND_H / 2} ${CX - DIAMOND_W / 2},${CY}`}
-            stroke={CORAL}
-            strokeWidth={1.5}
-            fill="none"
-            opacity={0.5}
-          />
-
-          {/* Easing curve dots */}
-          {easingDots.map((d, i) => (
-            <circle
-              key={i}
-              className="hud-dot"
-              cx={d.x} cy={d.y}
-              r={i === 0 || i === easingDots.length - 1 ? 5 : 3.2}
-              fill={CORAL}
-              opacity={0}
-            />
+          {labels.map((lb, i) => (
+            <text key={i} className="speedo-label" x={lb.x} y={lb.y}
+              textAnchor="middle" dominantBaseline="middle"
+              fill="rgba(168,179,196,0.9)" fontSize={11} fontWeight={700}
+              fontFamily="Inter, sans-serif" opacity={0}>{lb.val}</text>
           ))}
 
-          {/* Concentric trail arcs */}
-          {trailArcs.map((arc, i) => {
-            const d   = arcPath(CX, CY, arc.r, arc.start, arc.end);
-            const len = arcLength(arc.r, arc.start, arc.end);
-            return (
-              <path
-                key={i}
-                className="hud-arc"
-                d={d}
-                stroke={GOLD}
-                strokeWidth={1.4}
-                strokeLinecap="round"
-                strokeDasharray={len}
-                strokeDashoffset={len}
-                data-total={len}
-                opacity={0}
-              />
-            );
-          })}
+          <circle cx={CX} cy={CY} r={R - 18} fill="#0a0f18" />
+          <circle cx={CX} cy={CY} r={R - 18} fill="url(#speedoGrad)" />
+
+          <g ref={glowRef}>
+            <path ref={needleRef} d={needlePath(START)} fill={MINT} opacity={0.95} />
+          </g>
+
+          <circle cx={CX} cy={CY} r={12} fill="#1e2a3a" stroke={MINT} strokeWidth={2} />
+          <circle cx={CX} cy={CY} r={5}  fill={MINT} />
+
+          <rect x={CX - 38} y={CY + 44} width={76} height={32} rx={6}
+            fill="#0d1a2a" stroke="rgba(94,234,212,0.25)" strokeWidth={1} />
+          <text ref={readoutRef} x={CX} y={CY + 60}
+            textAnchor="middle" dominantBaseline="middle"
+            fill={MINT} fontSize={18} fontWeight={900}
+            fontFamily="'SFMono-Regular', Consolas, monospace">0</text>
+          <text x={CX} y={CY + 86} textAnchor="middle"
+            fill="rgba(168,179,196,0.6)" fontSize={9} fontWeight={700}
+            fontFamily="Inter, sans-serif" letterSpacing={2}>KM/H</text>
 
           <defs>
-            <radialGradient id="hudGrad" cx="38%" cy="32%" r="68%">
-              <stop offset="0%"   stopColor="#5eead4" stopOpacity="0.07" />
-              <stop offset="100%" stopColor="#0a0f18" stopOpacity="1"    />
-            </radialGradient>
-            <radialGradient id="innerGrad" cx="38%" cy="32%" r="68%">
-              <stop offset="0%"   stopColor="#fb7185" stopOpacity="0.06" />
+            <radialGradient id="speedoGrad" cx="50%" cy="40%" r="60%">
+              <stop offset="0%"   stopColor="#5eead4" stopOpacity="0.05" />
               <stop offset="100%" stopColor="#0a0f18" stopOpacity="1"    />
             </radialGradient>
           </defs>
         </svg>
 
-        {/* Center label — counter-rotates so text stays upright */}
-        <div className="hud-center-label">
-          <span className="hud-initials" style={{ opacity: 0 }}>{personal.initials}</span>
-          <LoaderCaption />
-        </div>
+        <div className="speedo-initials" style={{ opacity: 0 }}>{personal.initials}</div>
+        <div className="speedo-caption"  style={{ opacity: 0 }}>{caption}</div>
       </div>
     </div>
   );
 }
 
-function LoaderCaption() {
-  const captions = [
-    "Compiling genius...",
-    "Bribing the servers 💸",
-    "Turning coffee → code ☕",
-    "git push --force 😈",
-    "Almost hired already 🚀",
-    "Stack Overflow is open 🤫",
-    "Deleting node_modules...",
-    "It works on my machine 🤷",
-    "sudo make me a portfolio",
-    "404: Sleep not found 😴",
-  ];
-
-  // Pick one random caption on mount — never changes
-  const caption = useRef(captions[Math.floor(Math.random() * captions.length)]).current;
-  const spanRef = useRef(null);
-
-  useEffect(() => {
-    const el = spanRef.current;
-    if (!el) return;
-    animate(el, { opacity: [0, 1], translateY: [12, 0], duration: 600, ease: "outExpo" });
-  }, []);
-
-  return (
-    <span ref={spanRef} className="hud-subtitle" style={{ opacity: 0 }}>
-      {caption}
-    </span>
-  );
-}
 
 createRoot(document.getElementById("root")).render(<App />);

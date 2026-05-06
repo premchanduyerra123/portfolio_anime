@@ -1418,3 +1418,60 @@ li {
     grid-template-columns: 1fr;
   }
 }
+
+/* ─── Loader HUD ─────────────────────────────────────────────────────────── */
+
+.loader-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(94, 234, 212, 0.12), transparent 40%),
+    radial-gradient(circle at 75% 70%, rgba(251, 113, 133, 0.10), transparent 36%),
+    #0a0f18;
+}
+
+.loader-hud {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(88vw, 420px);
+  height: min(88vw, 420px);
+}
+
+/* SVG — static, no spin */
+.hud-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hud-center-label {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-initials {
+  color: #5eead4;
+  font-size: clamp(2.2rem, 9vw, 3.4rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-shadow:
+    0 0 20px rgba(94, 234, 212, 0.6),
+    0 0 50px rgba(94, 234, 212, 0.25);
+}
+
+.hud-subtitle {
+  color: rgba(250, 204, 21, 0.8);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}

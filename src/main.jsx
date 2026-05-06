@@ -341,6 +341,9 @@ function App() {
   const rootRef = usePortfolioAnimations();
   const { personal, contactItems, summary, metrics, skills, experience, projects, education, languages, hobbies } = portfolio;
   const [theme, setTheme] = useState(() => localStorage.getItem("portfolio-theme") || "dark");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFading, setIsFading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const featuredProject = projects[0];
   const otherProjects = projects.slice(1);
   const yearsExperience = calculateYearsExperience(personal.experienceStartDate);
@@ -355,10 +358,66 @@ function App() {
     localStorage.setItem("portfolio-theme", theme);
   }, [theme]);
 
+  useEffect(() => {
+    // Show loader for exactly 3s, then fade out over 0.5s, then reveal portfolio
+    const fadeTimer = window.setTimeout(() => setIsFading(true), 3000);
+    const hideTimer = window.setTimeout(() => {
+      setIsLoading(false);
+      setIsVisible(true);
+    }, 3500);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(hideTimer);
+    };
+  }, []);
+
+  // Animate portfolio entrance after loader exits
+  useEffect(() => {
+    if (!isVisible) return;
+    const tl = createTimeline({ defaults: { ease: "outExpo" } });
+    tl
+      // Whole page slides up from slightly below
+      .add("main", {
+        opacity: [0, 1],
+        translateY: [40, 0],
+        duration: 700,
+        ease: "outExpo",
+      })
+      // Nav bar drops in
+      .add(".nav", {
+        opacity: [0, 1],
+        translateY: [-20, 0],
+        duration: 600,
+      }, 100)
+      // Hero text lines cascade up
+      .add(".hero-copy > *", {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 700,
+        delay: stagger(70),
+      }, 250)
+      // Hero visual scales in
+      .add(".hero-visual", {
+        opacity: [0, 1],
+        scale: [0.92, 1],
+        duration: 900,
+        ease: "outBack(1.2)",
+      }, 300)
+      // Metrics count up from below
+      .add(".metric", {
+        opacity: [0, 1],
+        translateY: [24, 0],
+        duration: 600,
+        delay: stagger(60),
+      }, 500);
+  }, [isVisible]);
+
   return (
-    <main ref={rootRef} data-theme={theme}>
-      <div className="scroll-progress" aria-hidden="true" />
-      <AmbientMotion />
+    <>
+      {isLoading && <Loader personal={dynamicPersonal} fading={isFading} />}
+      <main ref={rootRef} data-theme={theme} style={{ opacity: 0 }}>
+        <div className="scroll-progress" aria-hidden="true" />
+        <AmbientMotion />
       <SocialBar personal={dynamicPersonal} />
       <nav className="nav">
         <a className="brand" href="#top" aria-label="Home">
@@ -506,6 +565,7 @@ function App() {
         <ContactCards items={contactItems} />
       </footer>
     </main>
+    </>
   );
 }
 
@@ -686,6 +746,338 @@ function AmbientMotion() {
         {symbols.map((symbol) => <span key={symbol}>{symbol}</span>)}
       </div>
     </div>
+  );
+}
+
+function Loader({ personal, fading }) {
+  const loaderRef = useRef(null);
+
+  // Portfolio palette
+  const MINT  = "#5eead4";
+  const CORAL = "#fb7185";
+  const GOLD  = "#facc15";
+  const BLUE  = "#60a5fa";
+
+  const SIZE    = 420;
+  const CX      = SIZE / 2;
+  const CY      = SIZE / 2;
+  const R_OUTER = 188;
+  const R_TICK  = 174;
+  const R_INNER = 156;
+
+  // Arc segments using portfolio colors
+  const arcSegments = [
+    { color: MINT,  start: 195, end: 268 },
+    { color: GOLD,  start: 270, end: 343 },
+    { color: CORAL, start: 345, end: 58  },
+    { color: BLUE,  start: 60,  end: 118 },
+    { color: MINT,  start: 120, end: 163 },
+  ];
+
+  function polarToXY(cx, cy, r, deg) {
+    const rad = ((deg - 90) * Math.PI) / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  function arcPath(cx, cy, r, startDeg, endDeg) {
+    let s = startDeg, e = endDeg;
+    if (e < s) e += 360;
+    const large = e - s > 180 ? 1 : 0;
+    const p1 = polarToXY(cx, cy, r, s);
+    const p2 = polarToXY(cx, cy, r, e);
+    return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 1 ${p2.x} ${p2.y}`;
+  }
+
+  function arcLength(r, startDeg, endDeg) {
+    let s = startDeg, e = endDeg;
+    if (e < s) e += 360;
+    return ((e - s) / 360) * 2 * Math.PI * r;
+  }
+
+  // Tick marks
+  const ticks = Array.from({ length: 120 }, (_, i) => {
+    const deg = (i / 120) * 360;
+    const isMajor = i % 10 === 0;
+    const r1 = R_OUTER - 2;
+    const r2 = isMajor ? R_TICK - 6 : R_TICK;
+    const p1 = polarToXY(CX, CY, r1, deg);
+    const p2 = polarToXY(CX, CY, r2, deg);
+    return { p1, p2, isMajor };
+  });
+
+  // Diamond scan lines
+  const DIAMOND_W = 128;
+  const DIAMOND_H = 158;
+  const diamondLines = Array.from({ length: 40 }, (_, i) => {
+    const t = i / 39;
+    const y = CY - DIAMOND_H / 2 + t * DIAMOND_H;
+    const halfW = (DIAMOND_W / 2) * (1 - Math.abs(t * 2 - 1));
+    return { x1: CX - halfW, x2: CX + halfW, y };
+  });
+
+  // Easing curve dots — inOutExpo shape
+  const easingDots = Array.from({ length: 24 }, (_, i) => {
+    const t = i / 23;
+    const ease = t < 0.5
+      ? Math.pow(2, 20 * t - 10) / 2
+      : (2 - Math.pow(2, -20 * t + 10)) / 2;
+    return {
+      x: CX - 88 + t * 196,
+      y: CY + 88 - ease * 196,
+    };
+  });
+
+  // Concentric trail arcs (bottom-right)
+  const trailArcs = [
+    { r: 98,  start: 28, end: 102 },
+    { r: 113, start: 22, end: 96  },
+    { r: 128, start: 16, end: 90  },
+    { r: 143, start: 10, end: 84  },
+  ];
+
+  // ── anime.js animations ──────────────────────────────────────────────────
+  useEffect(() => {
+    const el = loaderRef.current;
+    if (!el) return;
+
+    // 1. Outer ring arcs draw in with accelerate (inExpo) — feels like engine revving
+    animate(el.querySelectorAll(".hud-ring-progress"), {
+      strokeDashoffset: (node) => {
+        const total = parseFloat(node.getAttribute("data-total") || 0);
+        return [total, 0];
+      },
+      duration: 2200,
+      delay: stagger(120, { easing: "inExpo" }), // accelerating stagger
+      ease: "inOutExpo",
+    });
+
+    // 2. Tick marks flash in with accelerating stagger
+    animate(el.querySelectorAll(".hud-tick"), {
+      opacity: [0, 1],
+      scaleY: [0, 1],
+      duration: 600,
+      delay: stagger(8, { easing: "inExpo" }),
+      ease: "outExpo",
+    });
+
+    // 3. Diamond lines sweep in from center — accelerate outward
+    animate(el.querySelectorAll(".hud-diamond-line"), {
+      scaleX: [0, 1],
+      opacity: [0, 0.9],
+      duration: 900,
+      delay: stagger(28, { from: "center", easing: "inExpo" }),
+      ease: "outExpo",
+    });
+
+    // 4. Easing curve dots pop in with accelerating stagger
+    animate(el.querySelectorAll(".hud-dot"), {
+      opacity: [0, 1],
+      scale: [0, 1],
+      duration: 500,
+      delay: stagger(55, { easing: "inExpo" }),
+      ease: "outBack(2.2)",
+    });
+
+    // 5. Trail arcs draw in
+    animate(el.querySelectorAll(".hud-arc"), {
+      strokeDashoffset: (node) => {
+        const total = parseFloat(node.getAttribute("data-total") || 0);
+        return [total, 0];
+      },
+      opacity: [0, 0.65],
+      duration: 800,
+      delay: stagger(100),
+      ease: "outExpo",
+    });
+
+    // 6. Center initials fade up
+    createTimeline({ defaults: { ease: "outExpo" } })
+      .add(el.querySelectorAll(".hud-initials"), {
+        opacity: [0, 1],
+        scale: [0.6, 1],
+        duration: 700,
+      }, 300);
+
+    // 7. Pulse glow on the ring — breathes with inOutSine
+    animate(el.querySelectorAll(".hud-ring-progress"), {
+      opacity: [1, 0.6, 1],
+      duration: 1200,
+      delay: stagger(80),
+      loop: true,
+      ease: "inOutSine",
+    });
+  }, []);
+
+  return (
+    <div
+      className="loader-wrapper"
+      ref={loaderRef}
+      aria-hidden="true"
+      style={{ opacity: fading ? 0 : 1, transition: "opacity 0.5s ease" }}
+    >
+      <div className="loader-hud">
+        <svg
+          className="hud-svg"
+          width={SIZE}
+          height={SIZE}
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Base circle */}
+          <circle cx={CX} cy={CY} r={R_OUTER} fill="#0a0f18" />
+          <circle cx={CX} cy={CY} r={R_OUTER} fill="url(#hudGrad)" />
+
+          {/* Tick marks */}
+          {ticks.map((t, i) => (
+            <line
+              key={i}
+              className="hud-tick"
+              x1={t.p1.x} y1={t.p1.y}
+              x2={t.p2.x} y2={t.p2.y}
+              stroke={t.isMajor ? `${MINT}66` : `${MINT}28`}
+              strokeWidth={t.isMajor ? 1.5 : 0.7}
+              opacity={0}
+              style={{ transformOrigin: `${t.p1.x}px ${t.p1.y}px` }}
+            />
+          ))}
+
+          {/* Ring base track */}
+          <circle
+            cx={CX} cy={CY} r={R_OUTER - 6}
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth={10}
+            fill="none"
+          />
+
+          {/* Colored arc segments */}
+          {arcSegments.map((seg, i) => {
+            const d   = arcPath(CX, CY, R_OUTER - 6, seg.start, seg.end);
+            const len = arcLength(R_OUTER - 6, seg.start, seg.end);
+            return (
+              <path
+                key={i}
+                className="hud-ring-progress"
+                d={d}
+                stroke={seg.color}
+                strokeWidth={10}
+                strokeLinecap="round"
+                strokeDasharray={len}
+                strokeDashoffset={len}
+                data-total={len}
+                style={{ filter: `drop-shadow(0 0 8px ${seg.color}aa)` }}
+              />
+            );
+          })}
+
+          {/* Inner circle */}
+          <circle cx={CX} cy={CY} r={R_INNER} fill="#0a0f18" />
+          <circle cx={CX} cy={CY} r={R_INNER} fill="url(#innerGrad)" />
+
+          {/* Diamond scan lines */}
+          {diamondLines.map((l, i) => (
+            <line
+              key={i}
+              className="hud-diamond-line"
+              x1={l.x1} y1={l.y} x2={l.x2} y2={l.y}
+              stroke={CORAL}
+              strokeWidth={1.1}
+              opacity={0}
+              style={{ transformOrigin: `${CX}px ${l.y}px` }}
+            />
+          ))}
+
+          {/* Diamond outline */}
+          <polygon
+            points={`${CX},${CY - DIAMOND_H / 2} ${CX + DIAMOND_W / 2},${CY} ${CX},${CY + DIAMOND_H / 2} ${CX - DIAMOND_W / 2},${CY}`}
+            stroke={CORAL}
+            strokeWidth={1.5}
+            fill="none"
+            opacity={0.5}
+          />
+
+          {/* Easing curve dots */}
+          {easingDots.map((d, i) => (
+            <circle
+              key={i}
+              className="hud-dot"
+              cx={d.x} cy={d.y}
+              r={i === 0 || i === easingDots.length - 1 ? 5 : 3.2}
+              fill={CORAL}
+              opacity={0}
+            />
+          ))}
+
+          {/* Concentric trail arcs */}
+          {trailArcs.map((arc, i) => {
+            const d   = arcPath(CX, CY, arc.r, arc.start, arc.end);
+            const len = arcLength(arc.r, arc.start, arc.end);
+            return (
+              <path
+                key={i}
+                className="hud-arc"
+                d={d}
+                stroke={GOLD}
+                strokeWidth={1.4}
+                strokeLinecap="round"
+                strokeDasharray={len}
+                strokeDashoffset={len}
+                data-total={len}
+                opacity={0}
+              />
+            );
+          })}
+
+          <defs>
+            <radialGradient id="hudGrad" cx="38%" cy="32%" r="68%">
+              <stop offset="0%"   stopColor="#5eead4" stopOpacity="0.07" />
+              <stop offset="100%" stopColor="#0a0f18" stopOpacity="1"    />
+            </radialGradient>
+            <radialGradient id="innerGrad" cx="38%" cy="32%" r="68%">
+              <stop offset="0%"   stopColor="#fb7185" stopOpacity="0.06" />
+              <stop offset="100%" stopColor="#0a0f18" stopOpacity="1"    />
+            </radialGradient>
+          </defs>
+        </svg>
+
+        {/* Center label — counter-rotates so text stays upright */}
+        <div className="hud-center-label">
+          <span className="hud-initials" style={{ opacity: 0 }}>{personal.initials}</span>
+          <LoaderCaption />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoaderCaption() {
+  const captions = [
+    "Compiling genius...",
+    "Bribing the servers 💸",
+    "Turning coffee → code ☕",
+    "git push --force 😈",
+    "Almost hired already 🚀",
+    "Stack Overflow is open 🤫",
+    "Deleting node_modules...",
+    "It works on my machine 🤷",
+    "sudo make me a portfolio",
+    "404: Sleep not found 😴",
+  ];
+
+  // Pick one random caption on mount — never changes
+  const caption = useRef(captions[Math.floor(Math.random() * captions.length)]).current;
+  const spanRef = useRef(null);
+
+  useEffect(() => {
+    const el = spanRef.current;
+    if (!el) return;
+    animate(el, { opacity: [0, 1], translateY: [12, 0], duration: 600, ease: "outExpo" });
+  }, []);
+
+  return (
+    <span ref={spanRef} className="hud-subtitle" style={{ opacity: 0 }}>
+      {caption}
+    </span>
   );
 }
 

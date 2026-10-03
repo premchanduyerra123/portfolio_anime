@@ -22,6 +22,8 @@ npm run studio
 
 The Studio runs at `http://localhost:3333`. Sign in with the Sanity account that owns the project.
 
+Upload the public resume PDF under `Profile > Resume PDF`. Once the profile is published, the portfolio Resume button uses the Sanity asset URL. The bundled `/Prem_Java_4Years_Resume.pdf` remains the fallback until a Sanity file is uploaded.
+
 ## Initial content import
 
 Generate the import file from the current fallback data:

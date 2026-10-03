@@ -14,7 +14,20 @@ export const profile = defineType({
     defineField({ name: "location", title: "Location", type: "string" }),
     defineField({ name: "email", title: "Email", type: "email", validation: (rule) => rule.required() }),
     defineField({ name: "phone", title: "Phone", type: "string" }),
-    defineField({ name: "resumeFile", title: "Resume URL or path", type: "string" }),
+    defineField({
+      name: "resume",
+      title: "Resume PDF",
+      description: "Upload the PDF opened by the Resume button on the portfolio.",
+      type: "file",
+      options: { accept: "application/pdf" },
+    }),
+    defineField({
+      name: "resumeFile",
+      title: "Legacy resume path",
+      type: "string",
+      readOnly: true,
+      hidden: true,
+    }),
     defineField({ name: "github", title: "GitHub URL", type: "url" }),
     defineField({ name: "linkedin", title: "LinkedIn URL", type: "url" }),
     defineField({ name: "summary", title: "Professional summary", type: "text", rows: 7 }),
@@ -67,4 +80,3 @@ export const profile = defineType({
   ],
   preview: { select: { title: "name", subtitle: "title" } },
 });
-

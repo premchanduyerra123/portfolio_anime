@@ -19,7 +19,7 @@ const portfolioQuery = `{
     location,
     email,
     phone,
-    resumeFile,
+    "resumeFile": coalesce(resume.asset->url, resumeFile),
     github,
     linkedin,
     summary,

@@ -1,6 +1,8 @@
 node_modules/
 dist/
+sanity-dist/
 .vite/
+.sanity/
 *.log
 .env
 .env.local

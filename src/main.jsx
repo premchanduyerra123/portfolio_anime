@@ -22,7 +22,8 @@ import {
   Sparkles,
   Sun,
 } from "lucide-react";
-import portfolio from "./data/portfolio.json";
+import fallbackPortfolio from "./data/portfolio.json";
+import { fetchPortfolio } from "./lib/sanity";
 import "./styles.css";
 
 const iconMap = {
@@ -64,24 +65,7 @@ function usePortfolioAnimations() {
     createTimeline({ defaults: { ease: "outExpo" } })
       .add(".nav", { opacity: [0, 1], translateY: [-16, 0], duration: 800 })
       .add(".hero-copy > *", { opacity: [0, 1], translateY: [34, 0], duration: 950, delay: stagger(85) }, "-=450")
-      .add(".orbit-card", { opacity: [0, 1], scale: [0.88, 1], rotate: [-3, 0], duration: 1100, delay: stagger(90) }, "-=650")
       .add(".metric", { opacity: [0, 1], translateY: [18, 0], duration: 700, delay: stagger(75) }, "-=550");
-
-    animate(".orbital-ring", {
-      rotate: "1turn",
-      duration: 26000,
-      loop: true,
-      ease: "linear",
-    });
-
-    animate(".pulse-dot", {
-      scale: [1, 1.8, 1],
-      opacity: [0.95, 0.2, 0.95],
-      duration: 2200,
-      loop: true,
-      delay: stagger(250),
-      ease: "inOutSine",
-    });
 
     animate(".float-shard", {
       translateY: ["0rem", "-2.2rem", "0rem"],
@@ -100,23 +84,6 @@ function usePortfolioAnimations() {
       loop: true,
       delay: stagger(620),
       ease: "linear",
-    });
-
-    animate(".profile-core", {
-      translateY: ["-0.35rem", "0.35rem"],
-      duration: 2800,
-      loop: true,
-      direction: "alternate",
-      ease: "inOutSine",
-    });
-
-    animate(".orbit-card", {
-      translateY: ["-0.35rem", "0.35rem"],
-      duration: 2600,
-      loop: true,
-      direction: "alternate",
-      delay: stagger(240),
-      ease: "inOutSine",
     });
 
     createTimeline({ defaults: { ease: "outExpo" } })
@@ -339,6 +306,7 @@ function usePortfolioAnimations() {
 
 function App() {
   const rootRef = usePortfolioAnimations();
+  const [portfolio, setPortfolio] = useState(fallbackPortfolio);
   const { personal, contactItems, summary, metrics, skills, experience, projects, education, languages, hobbies } = portfolio;
   const [theme, setTheme] = useState(() => localStorage.getItem("portfolio-theme") || "dark");
   const [isLoading, setIsLoading] = useState(true);
@@ -353,6 +321,22 @@ function App() {
     ...metric,
     value: hydrateDynamicText(metric.value, { yearsExperience }),
   }));
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchPortfolio()
+      .then((content) => {
+        if (isMounted) setPortfolio(content);
+      })
+      .catch((error) => {
+        console.warn("Sanity content is unavailable; using bundled portfolio data.", error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("portfolio-theme", theme);

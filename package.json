@@ -1,16 +1,27 @@
 {
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
+    "dev": "vite --host localhost",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "studio": "sanity dev --host localhost",
+    "studio:build": "sanity build sanity-dist",
+    "studio:deploy": "sanity deploy",
+    "sanity:seed": "node scripts/create-sanity-seed.mjs",
+    "sanity:import": "sanity dataset import sanity/seed.ndjson --dataset production --replace"
   },
   "dependencies": {
+    "@sanity/client": "^8.9.0",
+    "@sanity/vision": "^6.17.0",
     "@vitejs/plugin-react": "^5.0.0",
     "animejs": "^4.1.3",
-    "vite": "^7.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "lucide-react": "^0.475.0"
-  },
-  "devDependencies": {}
+    "lucide-react": "^0.475.0",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "sanity": "^6.17.0",
+    "styled-components": "^6.5.3",
+    "vite": "^7.0.0"
+  }
 }

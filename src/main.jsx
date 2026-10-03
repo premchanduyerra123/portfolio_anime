@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { animate, stagger, createTimeline } from "animejs";
 import {
@@ -341,6 +341,9 @@ function App() {
   const rootRef = usePortfolioAnimations();
   const { personal, contactItems, summary, metrics, skills, experience, projects, education, languages, hobbies } = portfolio;
   const [theme, setTheme] = useState(() => localStorage.getItem("portfolio-theme") || "dark");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFading, setIsFading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const featuredProject = projects[0];
   const otherProjects = projects.slice(1);
   const yearsExperience = calculateYearsExperience(personal.experienceStartDate);
@@ -355,10 +358,66 @@ function App() {
     localStorage.setItem("portfolio-theme", theme);
   }, [theme]);
 
+  useEffect(() => {
+    // Show loader for exactly 3s, then fade out over 0.5s, then reveal portfolio
+    const fadeTimer = window.setTimeout(() => setIsFading(true), 3000);
+    const hideTimer = window.setTimeout(() => {
+      setIsLoading(false);
+      setIsVisible(true);
+    }, 3500);
+    return () => {
+      window.clearTimeout(fadeTimer);
+      window.clearTimeout(hideTimer);
+    };
+  }, []);
+
+  // Animate portfolio entrance after loader exits
+  useEffect(() => {
+    if (!isVisible) return;
+    const tl = createTimeline({ defaults: { ease: "outExpo" } });
+    tl
+      // Whole page slides up from slightly below
+      .add("main", {
+        opacity: [0, 1],
+        translateY: [40, 0],
+        duration: 700,
+        ease: "outExpo",
+      })
+      // Nav bar drops in
+      .add(".nav", {
+        opacity: [0, 1],
+        translateY: [-20, 0],
+        duration: 600,
+      }, 100)
+      // Hero text lines cascade up
+      .add(".hero-copy > *", {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 700,
+        delay: stagger(70),
+      }, 250)
+      // Hero visual scales in
+      .add(".hero-visual", {
+        opacity: [0, 1],
+        scale: [0.92, 1],
+        duration: 900,
+        ease: "outBack(1.2)",
+      }, 300)
+      // Metrics count up from below
+      .add(".metric", {
+        opacity: [0, 1],
+        translateY: [24, 0],
+        duration: 600,
+        delay: stagger(60),
+      }, 500);
+  }, [isVisible]);
+
   return (
-    <main ref={rootRef} data-theme={theme}>
-      <div className="scroll-progress" aria-hidden="true" />
-      <AmbientMotion />
+    <>
+      {isLoading && <Loader personal={dynamicPersonal} fading={isFading} />}
+      <main ref={rootRef} data-theme={theme} style={{ opacity: 0 }}>
+        <div className="scroll-progress" aria-hidden="true" />
+        <AmbientMotion />
       <SocialBar personal={dynamicPersonal} />
       <nav className="nav">
         <a className="brand" href="#top" aria-label="Home">
@@ -506,6 +565,7 @@ function App() {
         <ContactCards items={contactItems} />
       </footer>
     </main>
+    </>
   );
 }
 
@@ -688,5 +748,244 @@ function AmbientMotion() {
     </div>
   );
 }
+
+// ─── Speedometer Loader ───────────────────────────────────────────────────
+
+const CAPTIONS = [
+  "Compiling genius...",
+  "Bribing the servers 💸",
+  "Turning coffee → code ☕",
+  "git push --force 😈",
+  "Almost hired already 🚀",
+  "Stack Overflow is open 🤫",
+  "Deleting node_modules...",
+  "It works on my machine ��",
+  "sudo make me a portfolio",
+  "404: Sleep not found 😴",
+];
+
+function Loader({ personal, fading }) {
+  const needleRef  = useRef(null);
+  const readoutRef = useRef(null);
+  const glowRef    = useRef(null);
+  const caption    = useRef(CAPTIONS[Math.floor(Math.random() * CAPTIONS.length)]).current;
+
+  const SIZE  = 380;
+  const CX    = SIZE / 2;
+  const CY    = SIZE / 2 + 20;
+  const R     = 148;
+  const START = 225;
+  const SWEEP = 270;
+
+  const MINT  = "#5eead4";
+  const CORAL = "#fb7185";
+  const GOLD  = "#facc15";
+
+  function polar(cx, cy, r, deg) {
+    const rad = ((deg - 90) * Math.PI) / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  function arcD(cx, cy, r, startDeg, sweepDeg) {
+    const p1 = polar(cx, cy, r, startDeg);
+    const p2 = polar(cx, cy, r, startDeg + sweepDeg);
+    const large = sweepDeg > 180 ? 1 : 0;
+    return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 1 ${p2.x} ${p2.y}`;
+  }
+
+  const zones = [
+    { color: MINT,  sweep: SWEEP * 0.40 },
+    { color: GOLD,  sweep: SWEEP * 0.35 },
+    { color: CORAL, sweep: SWEEP * 0.25 },
+  ];
+
+  const TICK_COUNT = 41;
+  const ticks = Array.from({ length: TICK_COUNT }, (_, i) => {
+    const t   = i / (TICK_COUNT - 1);
+    const deg = START + t * SWEEP;
+    const isMaj = i % 4 === 0;
+    return { p1: polar(CX, CY, R + 8, deg), p2: polar(CX, CY, isMaj ? R + 22 : R + 15, deg), isMaj };
+  });
+
+  const labels = [0, 25, 50, 75, 100].map((val, i) => {
+    const pos = polar(CX, CY, R + 36, START + (i / 4) * SWEEP);
+    return { val, ...pos };
+  });
+
+  const NEEDLE_LEN  = R - 18;
+  const NEEDLE_BACK = 22;
+
+  function needlePath(deg) {
+    const tip  = polar(CX, CY, NEEDLE_LEN, deg);
+    const back = polar(CX, CY, -NEEDLE_BACK, deg);
+    const lw   = polar(CX, CY, 10, deg + 90);
+    const rw   = polar(CX, CY, 10, deg - 90);
+    return `M ${lw.x} ${lw.y} L ${tip.x} ${tip.y} L ${rw.x} ${rw.y} L ${back.x} ${back.y} Z`;
+  }
+
+  useEffect(() => {
+    const needle  = needleRef.current;
+    const readout = readoutRef.current;
+    const glow    = glowRef.current;
+    if (!needle || !readout || !glow) return;
+
+    // anime.js v4: animate a DOM element's custom property, read it back each frame
+    // We use a hidden div as the "proxy" target via CSS variable trick,
+    // but the most reliable v4 approach is a timeline with onUpdate via the
+    // animation's currentTime. Instead, drive with rAF + a single timeline.
+
+    let rafId;
+    let startTime = null;
+    const DURATION = 2600;
+
+    // inOutExpo easing function
+    function inOutExpo(t) {
+      if (t === 0) return 0;
+      if (t === 1) return 1;
+      return t < 0.5
+        ? Math.pow(2, 20 * t - 10) / 2
+        : (2 - Math.pow(2, -20 * t + 10)) / 2;
+    }
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const t = Math.min(elapsed / DURATION, 1);
+      const eased = inOutExpo(t);
+      const speed = eased * 100;
+      const deg = START + eased * SWEEP;
+
+      needle.setAttribute("d", needlePath(deg));
+      readout.textContent = Math.round(speed);
+
+      const glowColor = speed < 40 ? MINT : speed < 75 ? GOLD : CORAL;
+      glow.style.filter = `drop-shadow(0 0 14px ${glowColor}) drop-shadow(0 0 4px ${glowColor})`;
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+
+    rafId = requestAnimationFrame(tick);
+
+    animate(".speedo-tick", {
+      opacity: [0, 1],
+      scaleY: [0, 1],
+      duration: 400,
+      delay: stagger(18, { easing: "inExpo" }),
+      ease: "outExpo",
+    });
+
+    animate(".speedo-zone", {
+      strokeDashoffset: (el) => {
+        const total = parseFloat(el.getAttribute("data-total") || 0);
+        return [total, 0];
+      },
+      duration: 2400,
+      delay: stagger(80),
+      ease: "inOutExpo",
+    });
+
+    animate(".speedo-label", {
+      opacity: [0, 1],
+      duration: 500,
+      delay: stagger(60),
+      ease: "outExpo",
+    });
+
+    animate(".speedo-caption", {
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 600,
+      ease: "outExpo",
+    });
+
+    animate(".speedo-initials", {
+      opacity: [0, 1],
+      scale: [0.5, 1],
+      duration: 700,
+      ease: "outBack(1.8)",
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  let zoneStart = START;
+  const zonePaths = zones.map((z) => {
+    const len = (z.sweep / 360) * 2 * Math.PI * R;
+    const d   = arcD(CX, CY, R, zoneStart, z.sweep);
+    zoneStart += z.sweep;
+    return { ...z, d, len };
+  });
+
+  return (
+    <div
+      className="loader-wrapper"
+      aria-hidden="true"
+      style={{ opacity: fading ? 0 : 1, transition: "opacity 0.5s ease" }}
+    >
+      <div className="speedo-container">
+        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} fill="none">
+          <circle cx={CX} cy={CY} r={R + 34} fill="#0d1220" stroke="rgba(94,234,212,0.12)" strokeWidth={1.5} />
+          <circle cx={CX} cy={CY} r={R + 28} fill="none"    stroke="rgba(94,234,212,0.06)" strokeWidth={1}   />
+          <path d={arcD(CX, CY, R, START, SWEEP)} stroke="rgba(255,255,255,0.07)" strokeWidth={14} strokeLinecap="round" />
+
+          {zonePaths.map((z, i) => (
+            <path key={i} className="speedo-zone" d={z.d} stroke={z.color}
+              strokeWidth={14} strokeLinecap="butt"
+              strokeDasharray={z.len} strokeDashoffset={z.len} data-total={z.len}
+              style={{ filter: `drop-shadow(0 0 6px ${z.color}88)` }} />
+          ))}
+
+          {ticks.map((tk, i) => (
+            <line key={i} className="speedo-tick"
+              x1={tk.p1.x} y1={tk.p1.y} x2={tk.p2.x} y2={tk.p2.y}
+              stroke={tk.isMaj ? `${MINT}99` : `${MINT}44`}
+              strokeWidth={tk.isMaj ? 2 : 1} opacity={0}
+              style={{ transformOrigin: `${tk.p1.x}px ${tk.p1.y}px` }} />
+          ))}
+
+          {labels.map((lb, i) => (
+            <text key={i} className="speedo-label" x={lb.x} y={lb.y}
+              textAnchor="middle" dominantBaseline="middle"
+              fill="rgba(168,179,196,0.9)" fontSize={11} fontWeight={700}
+              fontFamily="Inter, sans-serif" opacity={0}>{lb.val}</text>
+          ))}
+
+          <circle cx={CX} cy={CY} r={R - 18} fill="#0a0f18" />
+          <circle cx={CX} cy={CY} r={R - 18} fill="url(#speedoGrad)" />
+
+          <g ref={glowRef}>
+            <path ref={needleRef} d={needlePath(START)} fill={MINT} opacity={0.95} />
+          </g>
+
+          <circle cx={CX} cy={CY} r={12} fill="#1e2a3a" stroke={MINT} strokeWidth={2} />
+          <circle cx={CX} cy={CY} r={5}  fill={MINT} />
+
+          <rect x={CX - 38} y={CY + 44} width={76} height={32} rx={6}
+            fill="#0d1a2a" stroke="rgba(94,234,212,0.25)" strokeWidth={1} />
+          <text ref={readoutRef} x={CX} y={CY + 60}
+            textAnchor="middle" dominantBaseline="middle"
+            fill={MINT} fontSize={18} fontWeight={900}
+            fontFamily="'SFMono-Regular', Consolas, monospace">0</text>
+          <text x={CX} y={CY + 86} textAnchor="middle"
+            fill="rgba(168,179,196,0.6)" fontSize={9} fontWeight={700}
+            fontFamily="Inter, sans-serif" letterSpacing={2}>KM/H</text>
+
+          <defs>
+            <radialGradient id="speedoGrad" cx="50%" cy="40%" r="60%">
+              <stop offset="0%"   stopColor="#5eead4" stopOpacity="0.05" />
+              <stop offset="100%" stopColor="#0a0f18" stopOpacity="1"    />
+            </radialGradient>
+          </defs>
+        </svg>
+
+        <div className="speedo-initials" style={{ opacity: 0 }}>{personal.initials}</div>
+        <div className="speedo-caption"  style={{ opacity: 0 }}>{caption}</div>
+      </div>
+    </div>
+  );
+}
+
 
 createRoot(document.getElementById("root")).render(<App />);

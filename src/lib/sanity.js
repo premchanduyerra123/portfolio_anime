@@ -5,7 +5,7 @@ const client = createClient({
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID || "fchi1qxx",
   dataset: import.meta.env.VITE_SANITY_DATASET || "production",
   apiVersion: "2026-03-01",
-  useCdn: true,
+  useCdn: false,
 });
 
 const portfolioQuery = `{
@@ -79,4 +79,3 @@ export async function fetchPortfolio() {
   const result = await client.fetch(portfolioQuery);
   return normalizePortfolio(result);
 }
-

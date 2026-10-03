@@ -3,7 +3,7 @@
     "name": "Prem Chandu Yerra",
     "initials": "PC",
     "title": "Java Full Stack Developer",
-    "heroHeadline": "Java + React Full Stack Developer",
+    "heroHeadline": "Prem - Java + React Full Stack Developer",
     "availability": "About me",
     "experienceStartDate": "2021-08-04",
     "location": "Telangana, India",
@@ -49,7 +49,7 @@
       "type": "github"
     }
   ],
-  "summary": "I am a Java Full Stack Developer with over {{yearsExperience}} years of experience building scalable web applications using React.js and Spring Boot. I design RESTful APIs, implement secure authentication with JWT/RBAC, optimize PostgreSQL, SQL Server, and MongoDB workloads, and modernize legacy systems into Spring-based architectures.",
+  "summary": "I am Prem, a Java Full Stack Developer with over {{yearsExperience}} years of experience building scalable web applications using React.js and Spring Boot. I design RESTful APIs, implement secure authentication with JWT/RBAC, optimize PostgreSQL, SQL Server, and MongoDB workloads, and modernize legacy systems into Spring-based architectures.",
   "metrics": [
     { "value": "{{yearsExperience}}+", "label": "Java full-stack delivery" },
     { "value": "Spring Boot APIs", "label": "REST, JWT, RBAC, async processing" },

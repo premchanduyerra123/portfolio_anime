@@ -59,7 +59,7 @@
   "skills": [
     {
       "category": "Backend Stack",
-      "items": ["Java", "Spring Boot", "Spring MVC", "PostgreSQL", "SQL Server", "JWT Security", "JPA / Hibernate", "Swagger / OpenAPI"]
+      "items": ["Java", "Spring Boot", "Spring MVC", "Spring Kafka", "PostgreSQL", "SQL Server", "JWT Security", "JPA / Hibernate", "Swagger / OpenAPI"]
     },
     {
       "category": "Frontend Stack",
@@ -88,15 +88,16 @@
       "role": "Senior Engineer",
       "period": "Apr 2025 - Present",
       "location": "Telangana, India",
-      "description": "Designed and developed the WelHire recruitment platform using Spring Boot and React.js, implemented CV parsing and JD-CV matching, built secure APIs with JWT/RBAC, and optimized PostgreSQL/MongoDB queries with async processing.",
+      "description": "Designed and developed the WelHire recruitment platform using Spring Boot and React.js, implemented CV parsing and JD-CV matching, integrated Spring Kafka for asynchronous CV processing, built secure APIs with JWT/RBAC, and optimized PostgreSQL/MongoDB queries.",
       "highlights": [
         "Built WelHire recruitment automation platform.",
         "Implemented JWT auth and role-based access control.",
         "Optimized PostgreSQL and MongoDB queries.",
+        "Integrated Spring Kafka for asynchronous CV parsing pipelines.",
         "Added async processing and scheduled pipelines.",
         "Delivered React + TypeScript dashboards."
       ],
-      "tags": ["Java", "Spring Boot", "Microservices", "React.js", "TypeScript", "PostgreSQL", "MongoDB", "JWT"]
+      "tags": ["Java", "Spring Boot", "Spring Kafka", "Microservices", "React.js", "TypeScript", "PostgreSQL", "MongoDB", "JWT"]
     },
     {
       "company": "Zemoso Technologies",
@@ -133,8 +134,8 @@
     {
       "name": "WelHire - AI-Powered Recruitment Automation",
       "label": "Enterprise System",
-      "technologies": ["Spring Boot", "Microservices", "React.js", "TypeScript", "PostgreSQL", "MongoDB", "JWT"],
-      "description": "Built a microservices-based recruitment platform using Spring Boot, React.js, and TypeScript. Implemented CV parsing, JD-CV matching, AI-driven scoring, and automated interview scheduling with secure JWT/RBAC APIs and optimized PostgreSQL + MongoDB workflows.",
+      "technologies": ["Spring Boot", "Spring Kafka", "Microservices", "React.js", "TypeScript", "PostgreSQL", "MongoDB", "JWT"],
+      "description": "Built a microservices-based recruitment platform using Spring Boot, Spring Kafka with Apache Kafka, React.js, and TypeScript. Implemented asynchronous CV parsing with Spring Kafka, JD-CV matching, AI-driven scoring, and automated interview scheduling with secure JWT/RBAC APIs and optimized PostgreSQL + MongoDB workflows.",
       "impact": "Improved recruitment automation, reduced manual scheduling effort, and increased candidate evaluation accuracy."
     },
     {
